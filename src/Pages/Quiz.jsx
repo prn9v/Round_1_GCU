@@ -73,10 +73,10 @@ const Quiz = () => {
         handleSubmit();
       }
       setPhase("answer");
-      setSeconds(30);
+      setSeconds(5);
     } else if (phase === "answer") {
       setPhase("leaderboard");
-      setSeconds(30);
+      setSeconds(5);
     } else if (phase === "leaderboard") {
       if (currentQues + 1 >= questions.length) {
         setQuizCompleted(true);
