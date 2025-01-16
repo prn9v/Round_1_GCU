@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { getDatabase, ref, get, update } from "firebase/database";
 import { useFirebase } from "../firebase";
@@ -36,11 +34,15 @@ const Quiz = () => {
         const snapshot = await get(dbRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const formattedQuestions = Object.values(data).map((q) => ({
-            ques: q.question,
+          const current = data.filter(batch => batch.isActive)[0];
+          const formattedQuestions = Object.values(current).map((q) => ({
+            num: q.QuestionNo,
+            ques: q.QuestionName,
             options: q.options,
-            correctAnswer: q.correctOption,
-          }));
+            correctAnswer: q.CorrectAns,
+          }))
+          //   .sort((a, b) => a - b);
+          // console.log(formattedQuestions)
           setQuestions(formattedQuestions);
         } else {
           console.log("No questions available");
@@ -71,10 +73,10 @@ const Quiz = () => {
         handleSubmit();
       }
       setPhase("answer");
-      setSeconds(5);
+      setSeconds(30);
     } else if (phase === "answer") {
       setPhase("leaderboard");
-      setSeconds(5);
+      setSeconds(30);
     } else if (phase === "leaderboard") {
       if (currentQues + 1 >= questions.length) {
         setQuizCompleted(true);
@@ -88,7 +90,7 @@ const Quiz = () => {
     setHighlight(null);
     setSelectedOption("");
     setCurrentQues((prev) => prev + 1);
-    setSeconds(30);
+    setSeconds(() => currentQues > 29 ? 180 : 30);
     setPhase("question");
     setAnswerSubmitted(false);
   };
@@ -142,7 +144,7 @@ const Quiz = () => {
     <>
       <div className="question-container bg-blue-900 items-center mb-5 justify-center border-2 border-yellow-400 rounded-lg">
         <h1 className="mt-6 text-3xl text-yellow-400">
-          Question {currentQues + 1}
+          Question {questions[currentQues]?.num}
         </h1>
         <p className="mb-6 text-2xl text-white">
           {questions[currentQues]?.ques}
@@ -152,11 +154,10 @@ const Quiz = () => {
         {questions[currentQues]?.options.map((option) => (
           <li
             key={option}
-            className={`flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-transform duration-200 transform hover:scale-105 shadow-md w-full sm:w-56 mx-auto ${
-              selectedOption === option
-                ? "bg-blue-700 border-yellow-400"
-                : "bg-blue-900 border-yellow-400"
-            }`}
+            className={`flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-transform duration-200 transform hover:scale-105 shadow-md w-full sm:w-56 mx-auto ${selectedOption === option
+              ? "bg-blue-700 border-yellow-400"
+              : "bg-blue-900 border-yellow-400"
+              }`}
           >
             <button
               type="button"
@@ -195,13 +196,12 @@ const Quiz = () => {
         {questions[currentQues]?.options.map((option) => (
           <li
             key={option}
-            className={`flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-transform duration-200 transform hover:scale-105 shadow-md w-full sm:w-56 mx-auto ${
-              option === questions[currentQues]?.correctAnswer
-                ? "bg-green-500 border-green-700"
-                : option === selectedOption
+            className={`flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-transform duration-200 transform hover:scale-105 shadow-md w-full sm:w-56 mx-auto ${option === questions[currentQues]?.correctAnswer
+              ? "bg-green-500 border-green-700"
+              : option === selectedOption
                 ? "bg-red-500 border-red-700"
                 : "bg-blue-900 border-yellow-400"
-            }`}
+              }`}
           >
             <button
               type="button"
