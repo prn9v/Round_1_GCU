@@ -35,15 +35,12 @@ const Quiz = () => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const current = data[2]
-          // console.log(current)
           const formattedQuestions = Object.values(current).map((q) => ({
             num: q.QuestionNo,
             ques: q.QuestionName,
             options: q.options,
             correctAnswer: q.CorrectAns,
           }))
-          //   .sort((a, b) => a - b);
-          // console.log(formattedQuestions)
           setQuestions(formattedQuestions);
         } else {
           console.log("No questions available");
