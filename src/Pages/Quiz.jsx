@@ -34,7 +34,8 @@ const Quiz = () => {
         const snapshot = await get(dbRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const current = data.filter(batch => batch.isActive)[0];
+          const current = data[2]
+          // console.log(current)
           const formattedQuestions = Object.values(current).map((q) => ({
             num: q.QuestionNo,
             ques: q.QuestionName,
