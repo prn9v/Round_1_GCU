@@ -34,15 +34,13 @@ const Quiz = () => {
         const snapshot = await get(dbRef);
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const current = data.filter(batch => batch.isActive)[0];
+          const current = data[2]
           const formattedQuestions = Object.values(current).map((q) => ({
             num: q.QuestionNo,
             ques: q.QuestionName,
             options: q.options,
             correctAnswer: q.CorrectAns,
           }))
-          //   .sort((a, b) => a - b);
-          // console.log(formattedQuestions)
           setQuestions(formattedQuestions);
         } else {
           console.log("No questions available");
